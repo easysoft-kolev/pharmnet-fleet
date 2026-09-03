@@ -144,6 +144,31 @@
 
   .driver-cell { display:flex; align-items:center; gap:8px; }
 
+  .stops-head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px; gap:10px; }
+  .stops-head label { margin-bottom:0; }
+  .stops-head .linkbtn { font-size:12px; flex-shrink:0; }
+
+  .stops {
+    max-height:230px; overflow-y:auto;
+    border:1px solid rgba(45,212,191,0.3); border-radius:11px;
+    background:rgba(0,0,0,0.32); padding:5px;
+  }
+  .stop {
+    display:flex; align-items:center; gap:11px;
+    padding:10px 9px; border-radius:8px; cursor:pointer;
+    font-size:14px; line-height:1.3; color:#2dd4bf;
+  }
+  .stop + .stop { margin-top:2px; }
+  .stop input {
+    width:19px; height:19px; flex-shrink:0; margin:0; padding:0;
+    accent-color:#2dd4bf; cursor:pointer;
+  }
+  .stop.checked { background:rgba(45,212,191,0.13); font-weight:600; }
+  .stops-empty { padding:16px 10px; font-size:13px; color:rgba(45,212,191,0.5); text-align:center; }
+  .stops-count { font-size:12px; color:rgba(45,212,191,0.65); text-align:center; margin-top:9px; }
+
+  .stops-cell { white-space:normal; min-width:190px; max-width:260px; font-size:11px; line-height:1.45; }
+
   .preview { text-align:center; font-size:13px; color:rgba(45,212,191,0.75); margin:4px 0 16px; }
   .preview strong { font-size:20px; color:#2dd4bf; }
 
@@ -289,6 +314,15 @@
         <option value="Регион-Добрич">Регион-Добрич</option>
       </select>
     </div>
+
+    <div class="field">
+      <div class="stops-head">
+        <label for="stopsList">Посетени аптеки</label>
+        <button type="button" class="linkbtn" id="stopsToggle">Избери всички</button>
+      </div>
+      <div class="stops" id="stopsList"></div>
+      <div class="stops-count" id="stopsCount"></div>
+    </div>
     <div class="field">
       <label for="startKm">Начални километри</label>
       <input type="number" id="startKm" inputmode="numeric" placeholder="0">
@@ -322,7 +356,7 @@
         <thead>
           <tr>
             <th>Дата и час</th><th>Шофьор</th><th>Рег. №</th><th>Маршрут</th>
-            <th>Начало</th><th>Край</th><th>Км</th><th></th>
+            <th>Аптеки</th><th>Начало</th><th>Край</th><th>Км</th><th></th>
           </tr>
         </thead>
         <tbody id="logBody"></tbody>
@@ -343,7 +377,7 @@
    Грешно:    var API_URL = https://script.google.com/macros/s/AAA/exec;
    ================================================================== */
 
-var API_URL = "https://script.google.com/macros/s/AKfycbx86TzWTfYX7KljHARL_6oZOXLfxyn51JdRmqLEaNB45ziEltvCtAWzsBRVTHudQVR7/exec";
+var API_URL = "https://script.google.com/macros/s/AKfycby0kHU7Opf75X10BqkzTFiW_67y3Gjdffil4kBlkduHFp4vp97-6ZjY2KbQITG9K2eh/exec";
 
 /* Резервен вход, важи САМО докато API_URL е празен. */
 var LOCAL_USERS = { "ivo-pharmnet": "Ivo123" };
@@ -499,6 +533,139 @@ function loadLogs() {
   });
 }
 
+/* ---------- Аптеки по региони ----------
+   Подредени по посоката на обиколката.
+   За да добавиш аптека, впиши я на нейното място в списъка. */
+var PHARMACIES = {
+  "Регион-Шумен": [
+    "Фармедия Шумен",
+    "Мултифарма Шумен",
+    "Шуменфарма (Ш-н 1)",
+    "Ш-н 2",
+    "Тракия",
+    "Адаптамед Смядово",
+    "Шуменфарма Велики Преслав",
+    "Разградфарма Търговище",
+    "Алфамедика Търговище",
+    "Разградфарма Омуртаг"
+  ],
+  "Регион-Добрич": [
+    "Добричфарма",
+    "Чернева 3",
+    "Новамед",
+    "Чернева",
+    "Медишоп"
+  ],
+  "Регион-Бургас": [
+    "Експресфарма Руен",
+    "Айтосфарма Айтос",
+    "Демосфарма Айтос",
+    "Лита Карнобат",
+    "Бургас Изгрев",
+    "Медикотрейд Поморие",
+    "Дрогерия Ахелой",
+    "Варнамед Несебър"
+  ],
+  "Регион-Разград": [
+    "Разградфарма Попово",
+    "Добричфарма Разград",
+    "Мултимед Разград",
+    "Мултифарма Нови Пазар",
+    "Новамед Нови Пазар",
+    "Витамед Каспичан"
+  ],
+  "Регион-Силистра": [
+    "Добричфарма Силистра",
+    "Силистра 2",
+    "Добричфарма Кубрат",
+    "Варнафарма-М Брестовене",
+    "Варнафарма-М Завет",
+    "Фармация Исперих"
+  ],
+  "Регион-Провадия": []
+};
+
+function renderStops() {
+  var box = $("stopsList");
+  if (!box) { return; }
+
+  var list = PHARMACIES[$("route").value] || [];
+  box.innerHTML = "";
+
+  if (!list.length) {
+    var msg = document.createElement("div");
+    msg.className = "stops-empty";
+    msg.textContent = "Няма въведени аптеки за този регион.";
+    box.appendChild(msg);
+    updateStopsCount();
+    return;
+  }
+
+  for (var i = 0; i < list.length; i++) {
+    var row = document.createElement("label");
+    row.className = "stop";
+
+    var cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.value = list[i];
+    cb.addEventListener("change", onStopChange);
+
+    var txt = document.createElement("span");
+    txt.textContent = list[i];
+
+    row.appendChild(cb);
+    row.appendChild(txt);
+    box.appendChild(row);
+  }
+  updateStopsCount();
+}
+
+function onStopChange(ev) {
+  var row = ev.target.parentNode;
+  row.className = "stop" + (ev.target.checked ? " checked" : "");
+  updateStopsCount();
+}
+
+function stopBoxes() {
+  var box = $("stopsList");
+  return box ? box.getElementsByTagName("input") : [];
+}
+
+function selectedStops() {
+  var boxes = stopBoxes();
+  var out = [];
+  for (var i = 0; i < boxes.length; i++) {
+    if (boxes[i].checked) { out.push(boxes[i].value); }
+  }
+  return out;
+}
+
+function updateStopsCount() {
+  var boxes = stopBoxes();
+  var total = boxes.length;
+  var picked = selectedStops().length;
+
+  $("stopsCount").textContent = total
+    ? picked + " от " + total + " избрани"
+    : "";
+
+  $("stopsToggle").textContent =
+    (total && picked === total) ? "Изчисти" : "Избери всички";
+  $("stopsToggle").style.display = total ? "" : "none";
+}
+
+function toggleAllStops() {
+  var boxes = stopBoxes();
+  if (!boxes.length) { return; }
+
+  var selectAll = selectedStops().length < boxes.length;
+  for (var i = 0; i < boxes.length; i++) {
+    boxes[i].checked = selectAll;
+    boxes[i].parentNode.className = "stop" + (selectAll ? " checked" : "");
+  }
+  updateStopsCount();
+}
+
 /* ---------- Аватари по инициали ---------- */
 var AVATAR_COLORS = ["#2dd4bf", "#38bdf8", "#a78bfa", "#5eead4", "#22d3ee", "#c4b5fd"];
 var driverColors = {};
@@ -580,10 +747,17 @@ function logDrive() {
     return;
   }
 
+  var stops = selectedStops();
+  if (stopBoxes().length && !stops.length) {
+    show("formError", "Отметни поне една посетена аптека.");
+    return;
+  }
+
   var rec = {
     driver: $("driver").value,
     plate: $("plate").value,
     route: $("route").value,
+    stops: stops.join(", "),
     start: s,
     end: e,
     dist: e - s
@@ -606,6 +780,7 @@ function logDrive() {
   api({
     action: "add", token: token, user: currentUser,
     driver: rec.driver, plate: rec.plate, route: rec.route,
+    stops: rec.stops,
     start: rec.start, end: rec.end
   }).then(function (res) {
     clearTimeout(slowTimer);
@@ -633,6 +808,7 @@ function logDrive() {
 function clearForm() {
   $("startKm").value = "";
   $("endKm").value = "";
+  renderStops();
   updatePreview();
 }
 
@@ -672,7 +848,7 @@ function render() {
     total += Number(l.dist) || 0;
 
     var tr = document.createElement("tr");
-    var cells = [l.when, l.driver, l.plate, l.route, l.start, l.end, l.dist];
+    var cells = [l.when, l.driver, l.plate, l.route, l.stops || "", l.start, l.end, l.dist];
     for (var c = 0; c < cells.length; c++) {
       var td = document.createElement("td");
       if (c === 1) {
@@ -683,6 +859,9 @@ function render() {
         nm.textContent = cells[c];
         wrap.appendChild(nm);
         td.appendChild(wrap);
+      } else if (c === 4) {
+        td.className = "stops-cell";
+        td.textContent = cells[c];
       } else {
         td.textContent = cells[c];
       }
@@ -720,6 +899,8 @@ bind("refreshBtn", "click", loadLogs);
 bind("startKm", "input", updatePreview);
 bind("endKm", "input", updatePreview);
 bind("driver", "change", updateDriverAvatar);
+bind("route", "change", renderStops);
+bind("stopsToggle", "click", toggleAllStops);
 bind("password", "keydown", function (ev) {
   if (ev.key === "Enter") { doLogin(); }
 });
@@ -728,6 +909,7 @@ if (!API_URL) { show("offlineWarn"); }
 
 buildDriverColors();
 updateDriverAvatar();
+renderStops();
 render();
 go("home");
 window.__ready = true;
