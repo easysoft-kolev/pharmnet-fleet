@@ -131,6 +131,19 @@
   }
   .slowmsg.show { display:block; }
 
+  .driver-row { display:flex; align-items:center; gap:11px; }
+  .driver-row select { flex:1; }
+
+  .avatar {
+    width:44px; height:44px; flex-shrink:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Unbounded', sans-serif; font-weight:700;
+    font-size:14px; color:#04120f; letter-spacing:0.5px;
+  }
+  .avatar-sm { width:26px; height:26px; font-size:9px; letter-spacing:0.3px; }
+
+  .driver-cell { display:flex; align-items:center; gap:8px; }
+
   .preview { text-align:center; font-size:13px; color:rgba(45,212,191,0.75); margin:4px 0 16px; }
   .preview strong { font-size:20px; color:#2dd4bf; }
 
@@ -246,11 +259,14 @@
     <h2>Нов курс</h2>
     <div class="field">
       <label for="driver">Шофьор</label>
-      <select id="driver">
-        <option value="Иво Колев">Иво Колев</option>
-        <option value="Борислав Яков">Борислав Яков</option>
-        <option value="Валентин Недялков">Валентин Недялков</option>
-      </select>
+      <div class="driver-row">
+        <div class="avatar" id="driverAvatar"></div>
+        <select id="driver">
+          <option value="Иво Колев">Иво Колев</option>
+          <option value="Борислав Яков">Борислав Яков</option>
+          <option value="Валентин Недялков">Валентин Недялков</option>
+        </select>
+      </div>
     </div>
     <div class="field">
       <label for="plate">Регистрационен номер</label>
@@ -483,6 +499,59 @@ function loadLogs() {
   });
 }
 
+/* ---------- Аватари по инициали ---------- */
+var AVATAR_COLORS = ["#2dd4bf", "#38bdf8", "#a78bfa", "#5eead4", "#22d3ee", "#c4b5fd"];
+var driverColors = {};
+
+/* Всеки шофьор от списъка получава свой цвят по реда си,
+   за да няма двама с еднакъв. */
+function buildDriverColors() {
+  var sel = $("driver");
+  if (!sel) { return; }
+  for (var i = 0; i < sel.options.length; i++) {
+    driverColors[sel.options[i].value] = AVATAR_COLORS[i % AVATAR_COLORS.length];
+  }
+}
+
+function initials(name) {
+  var parts = String(name || "").trim().split(/\s+/);
+  var out = "";
+  for (var i = 0; i < parts.length && out.length < 2; i++) {
+    if (parts[i]) { out += parts[i].charAt(0).toUpperCase(); }
+  }
+  return out || "?";
+}
+
+function avatarColor(name) {
+  var key = String(name || "");
+  if (driverColors[key]) { return driverColors[key]; }
+
+  /* Шофьор, който вече не е в списъка (стари записи) */
+  var h = 5381;
+  for (var i = 0; i < key.length; i++) {
+    h = ((h << 5) + h + key.charCodeAt(i)) >>> 0;
+  }
+  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+}
+
+function makeAvatar(name, small) {
+  var el = document.createElement("div");
+  el.className = "avatar" + (small ? " avatar-sm" : "");
+  el.style.background = avatarColor(name);
+  el.textContent = initials(name);
+  el.title = name;
+  return el;
+}
+
+function updateDriverAvatar() {
+  var name = $("driver").value;
+  var el = $("driverAvatar");
+  if (!el) { return; }
+  el.style.background = avatarColor(name);
+  el.textContent = initials(name);
+  el.title = name;
+}
+
 function updatePreview() {
   var s = parseFloat($("startKm").value);
   var e = parseFloat($("endKm").value);
@@ -606,7 +675,17 @@ function render() {
     var cells = [l.when, l.driver, l.plate, l.route, l.start, l.end, l.dist];
     for (var c = 0; c < cells.length; c++) {
       var td = document.createElement("td");
-      td.textContent = cells[c];
+      if (c === 1) {
+        var wrap = document.createElement("div");
+        wrap.className = "driver-cell";
+        wrap.appendChild(makeAvatar(cells[c], true));
+        var nm = document.createElement("span");
+        nm.textContent = cells[c];
+        wrap.appendChild(nm);
+        td.appendChild(wrap);
+      } else {
+        td.textContent = cells[c];
+      }
       tr.appendChild(td);
     }
 
@@ -640,12 +719,15 @@ bind("saveBtn", "click", logDrive);
 bind("refreshBtn", "click", loadLogs);
 bind("startKm", "input", updatePreview);
 bind("endKm", "input", updatePreview);
+bind("driver", "change", updateDriverAvatar);
 bind("password", "keydown", function (ev) {
   if (ev.key === "Enter") { doLogin(); }
 });
 
 if (!API_URL) { show("offlineWarn"); }
 
+buildDriverColors();
+updateDriverAvatar();
 render();
 go("home");
 window.__ready = true;
