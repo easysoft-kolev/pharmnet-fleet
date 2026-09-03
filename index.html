@@ -262,7 +262,7 @@
    Грешно:    var API_URL = https://script.google.com/macros/s/AAA/exec;
    ================================================================== */
 
-var API_URL = "https://script.google.com/macros/s/AKfycbx86TzWTfYX7KljHARL_6oZOXLfxyn51JdRmqLEaNB45ziEltvCtAWzsBRVTHudQVR7/exec";
+var API_URL = "";
 
 /* Резервен вход, важи САМО докато API_URL е празен. */
 var LOCAL_USERS = { "IvoFrm": "Ivo123" };
@@ -309,7 +309,7 @@ function api(params) {
     var timer = setTimeout(function () {
       cleanup();
       reject(new Error("Няма отговор от сървъра."));
-    }, 25000);
+    }, 45000);
 
     function cleanup() {
       clearTimeout(timer);
@@ -424,6 +424,7 @@ function updatePreview() {
 /* ---------- Запис ---------- */
 function logDrive() {
   if (!loggedIn) { go("login"); return; }
+  if ($("saveBtn").disabled) { return; }   // вече тече запис — не праща втори път
 
   hide("formError");
   hide("formOk");
