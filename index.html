@@ -197,7 +197,7 @@
       <h1>Pharmnet EAD</h1>
       <p>Fleet Management System</p>
     </div>
-    <button class="btn" id="startBtn">Запиши курс</button>
+    <button class="btn" id="startBtn">Въведи маршрут</button>
   </div>
 </div>
 
@@ -286,7 +286,7 @@
 
     <div class="error" id="formError"></div>
     <div class="ok" id="formOk">Курсът е записан в базата данни.</div>
-    <button class="btn" id="saveBtn">Запиши курс</button>
+    <button class="btn" id="saveBtn">Въведи маршрут</button>
     <div class="slowmsg" id="saveSlow">Свързваме се с базата данни, може да отнеме няколко секунди...</div>
   </div>
 
@@ -330,7 +330,7 @@
 var API_URL = "https://script.google.com/macros/s/AKfycbx86TzWTfYX7KljHARL_6oZOXLfxyn51JdRmqLEaNB45ziEltvCtAWzsBRVTHudQVR7/exec";
 
 /* Резервен вход, важи САМО докато API_URL е празен. */
-var LOCAL_USERS = { "IvoFrm": "Ivo123" };
+var LOCAL_USERS = { "ivo-pharmnet": "Ivo123" };
 
 /* ================== оттук надолу не се пипа ================== */
 
@@ -542,7 +542,7 @@ function logDrive() {
     clearTimeout(slowTimer);
     hide("saveSlow");
     btn.disabled = false;
-    btn.textContent = "Запиши курс";
+    btn.textContent = "Въведи маршрут";
     if (res && res.ok) {
       logs = res.rows || logs;
       clearForm();
@@ -556,7 +556,7 @@ function logDrive() {
     clearTimeout(slowTimer);
     hide("saveSlow");
     btn.disabled = false;
-    btn.textContent = "Запиши курс";
+    btn.textContent = "Въведи маршрут";
     show("formError", err.message + " Курсът НЕ е записан.");
   });
 }
