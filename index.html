@@ -6,15 +6,54 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#060a14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Unbounded:wght@600;700;800&display=swap" rel="stylesheet">
 <title>Pharmnet EAD — Fleet Management System</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body {
-    background:#000000;
-    color:#10b981;
-    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:#060a14;
+    color:#2dd4bf;
+    font-family:'Golos Text', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height:100%;
+  }
+
+  /* ---------- Анимиран фон ---------- */
+  .aurora {
+    position:fixed; inset:0; z-index:-1; overflow:hidden; pointer-events:none;
+    background:#060a14;
+  }
+  .aurora span {
+    position:absolute; border-radius:50%; filter:blur(60px);
+    opacity:0.55; mix-blend-mode:screen;
+    animation:drift 22s ease-in-out infinite;
+  }
+  .aurora span:nth-child(1) {
+    width:52vw; height:52vw; left:-14vw; top:-18vw;
+    background:#2dd4bf; animation-duration:20s;
+  }
+  .aurora span:nth-child(2) {
+    width:44vw; height:44vw; right:-12vw; top:2vw;
+    background:#38bdf8; animation-duration:26s; animation-delay:-6s;
+  }
+  .aurora span:nth-child(3) {
+    width:48vw; height:48vw; left:12vw; bottom:-22vw;
+    background:#818cf8; animation-duration:30s; animation-delay:-13s;
+  }
+  .aurora span:nth-child(4) {
+    width:30vw; height:30vw; right:14vw; bottom:6vw;
+    background:#5eead4; animation-duration:18s; animation-delay:-9s;
+  }
+  @keyframes drift {
+    0%   { transform:translate(0,0) scale(1); }
+    33%  { transform:translate(8vw,-6vw) scale(1.15); }
+    66%  { transform:translate(-6vw,5vw) scale(0.92); }
+    100% { transform:translate(0,0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aurora span { animation:none; }
   }
 
   #fatal {
@@ -36,8 +75,8 @@
   .brand { text-align:center; margin-bottom:26px; }
   .logo-box { display:inline-block; max-width:300px; width:78%; }
   .logo-box img { display:block; width:100%; height:auto; }
-  .brand h1 { margin-top:16px; font-size:24px; font-weight:700; letter-spacing:0.5px; color:#10b981; }
-  .brand p { margin-top:5px; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:rgba(16,185,129,0.65); }
+  .brand h1 { margin-top:16px; font-size:25px; font-weight:700; letter-spacing:0.2px; color:#2dd4bf; font-family:'Unbounded', sans-serif; }
+  .brand p { margin-top:6px; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:rgba(45,212,191,0.6); }
 
   #screen-home { display:none; }
   #screen-home.active { display:flex; flex-direction:column; justify-content:center; align-items:center; }
@@ -45,41 +84,55 @@
 
   .btn {
     display:block; width:100%; border:none; border-radius:14px;
-    padding:17px 20px; font-size:17px; font-weight:700; letter-spacing:0.5px;
-    color:#000000; background:linear-gradient(135deg,#10b981,#34d399);
-    box-shadow:0 0 22px rgba(16,185,129,0.45); cursor:pointer; font-family:inherit;
+    padding:17px 20px; font-size:16px; font-weight:700; letter-spacing:0.2px;
+    color:#04120f; background:linear-gradient(135deg,#2dd4bf,#5eead4);
+    box-shadow:0 0 22px rgba(45,212,191,0.4); cursor:pointer; font-family:'Unbounded', sans-serif;
   }
   .btn:active { transform:scale(0.985); }
   .btn[disabled] { opacity:0.55; box-shadow:none; }
   .btn-ghost {
-    background:transparent; color:#10b981; border:1px solid rgba(16,185,129,0.5);
-    box-shadow:none; font-weight:600; font-size:15px; padding:13px 20px;
+    background:transparent; color:#2dd4bf; border:1px solid rgba(45,212,191,0.5);
+    box-shadow:none; font-weight:600; font-size:14px; padding:13px 20px;
   }
 
   .card {
-    background:#050505; border:1px solid rgba(16,185,129,0.45); border-radius:16px;
-    padding:20px 18px; box-shadow:0 0 20px rgba(16,185,129,0.18);
+    background:rgba(9,14,26,0.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(45,212,191,0.35); border-radius:16px;
+    padding:20px 18px; box-shadow:0 0 24px rgba(45,212,191,0.14);
     margin:0 auto 18px; max-width:520px;
   }
-  .card h2 { font-size:16px; margin-bottom:16px; letter-spacing:0.4px; }
+  .card h2 { font-size:15px; margin-bottom:16px; letter-spacing:0.3px; font-family:'Unbounded', sans-serif; font-weight:600; }
 
-  label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.4px; color:rgba(16,185,129,0.7); margin-bottom:6px; }
+  label { display:block; font-size:11px; text-transform:uppercase; letter-spacing:1.4px; color:rgba(45,212,191,0.7); margin-bottom:6px; }
   .field { margin-bottom:15px; }
 
   input, select {
-    width:100%; background:#000000; border:1px solid rgba(16,185,129,0.4);
-    border-radius:10px; padding:13px 12px; color:#10b981; font-size:16px;
+    width:100%; background:#000000; border:1px solid rgba(45,212,191,0.4);
+    border-radius:10px; padding:13px 12px; color:#2dd4bf; font-size:16px;
     font-family:inherit; outline:none; -webkit-appearance:none; appearance:none;
   }
   select {
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%232dd4bf' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>");
     background-repeat:no-repeat; background-position:right 12px center; padding-right:36px;
   }
-  input:focus, select:focus { border-color:#10b981; box-shadow:0 0 12px rgba(16,185,129,0.35); }
-  input::placeholder { color:rgba(16,185,129,0.35); }
+  input:focus, select:focus { border-color:#2dd4bf; box-shadow:0 0 12px rgba(45,212,191,0.35); }
+  input::placeholder { color:rgba(45,212,191,0.35); }
 
-  .preview { text-align:center; font-size:13px; color:rgba(16,185,129,0.75); margin:4px 0 16px; }
-  .preview strong { font-size:20px; color:#10b981; }
+  .spinner {
+    display:inline-block; width:15px; height:15px; margin-right:8px;
+    border:2px solid rgba(0,0,0,0.35); border-top-color:#000000;
+    border-radius:50%; vertical-align:-3px;
+    animation:spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .slowmsg {
+    display:none; text-align:center; font-size:12px;
+    color:rgba(45,212,191,0.6); margin-top:10px; line-height:1.4;
+  }
+  .slowmsg.show { display:block; }
+
+  .preview { text-align:center; font-size:13px; color:rgba(45,212,191,0.75); margin:4px 0 16px; }
+  .preview strong { font-size:20px; color:#2dd4bf; }
 
   .error, .warn, .ok {
     display:none; border-radius:10px; padding:11px 12px; font-size:13px;
@@ -87,36 +140,38 @@
   }
   .error { background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.55); color:#f87171; }
   .warn  { background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.5); color:#fbbf24; }
-  .ok    { background:rgba(16,185,129,0.10); border:1px solid rgba(16,185,129,0.5); color:#10b981; }
+  .ok    { background:rgba(45,212,191,0.10); border:1px solid rgba(45,212,191,0.5); color:#2dd4bf; }
   .error.show, .warn.show, .ok.show { display:block; }
 
   .topbar { display:flex; align-items:center; justify-content:space-between; gap:10px; max-width:520px; margin:0 auto 14px; }
-  .topbar .who { font-size:12px; color:rgba(16,185,129,0.7); }
-  .linkbtn { background:none; border:none; color:#10b981; font-family:inherit; font-size:13px; text-decoration:underline; cursor:pointer; padding:4px; }
+  .topbar .who { font-size:12px; color:rgba(45,212,191,0.7); }
+  .linkbtn { background:none; border:none; color:#2dd4bf; font-family:inherit; font-size:13px; text-decoration:underline; cursor:pointer; padding:4px; }
 
   .stats { display:flex; gap:12px; max-width:520px; margin:0 auto 18px; }
   .stat {
-    flex:1; background:#050505; border:1px solid rgba(16,185,129,0.4);
-    border-radius:14px; padding:14px 10px; text-align:center; box-shadow:0 0 16px rgba(16,185,129,0.15);
+    flex:1; background:rgba(9,14,26,0.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(45,212,191,0.35);
+    border-radius:14px; padding:14px 10px; text-align:center; box-shadow:0 0 16px rgba(45,212,191,0.12);
   }
-  .stat .v { font-size:24px; font-weight:700; }
-  .stat .l { font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:rgba(16,185,129,0.65); margin-top:4px; }
+  .stat .v { font-size:23px; font-weight:700; font-family:'Unbounded', sans-serif; }
+  .stat .l { font-size:10px; letter-spacing:1.2px; text-transform:uppercase; color:rgba(45,212,191,0.65); margin-top:4px; }
 
   .table-wrap { max-width:520px; margin:0 auto; overflow-x:auto; }
   table { width:100%; border-collapse:collapse; font-size:12px; min-width:640px; }
-  th, td { padding:10px 8px; text-align:left; border-bottom:1px solid rgba(16,185,129,0.18); white-space:nowrap; }
-  th { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:rgba(16,185,129,0.6); }
+  th, td { padding:10px 8px; text-align:left; border-bottom:1px solid rgba(45,212,191,0.18); white-space:nowrap; }
+  th { font-size:10px; text-transform:uppercase; letter-spacing:1px; color:rgba(45,212,191,0.6); }
   .del {
     background:none; border:1px solid rgba(239,68,68,0.5); color:#f87171;
     border-radius:8px; padding:5px 10px; font-size:11px; cursor:pointer; font-family:inherit;
   }
-  .empty { text-align:center; color:rgba(16,185,129,0.45); font-size:13px; padding:26px 0; }
+  .empty { text-align:center; color:rgba(45,212,191,0.45); font-size:13px; padding:26px 0; }
 
   .cardhead { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
   .cardhead h2 { margin:0; }
 </style>
 </head>
 <body>
+
+<div class="aurora"><span></span><span></span><span></span><span></span></div>
 
 <div id="fatal"></div>
 
@@ -169,6 +224,7 @@
       <input type="password" id="password" autocomplete="current-password" placeholder="Парола">
     </div>
     <button class="btn" id="loginBtn">Влез</button>
+    <div class="slowmsg" id="loginSlow">Свързваме се с базата данни, може да отнеме няколко секунди...</div>
     <div style="height:10px"></div>
     <button class="btn btn-ghost" id="loginBackBtn">Назад</button>
   </div>
@@ -193,6 +249,7 @@
       <select id="driver">
         <option value="Иво Колев">Иво Колев</option>
         <option value="Борислав Яков">Борислав Яков</option>
+        <option value="Валентин Недялков">Валентин Недялков</option>
       </select>
     </div>
     <div class="field">
@@ -200,6 +257,9 @@
       <select id="plate">
         <option value="CB 4902 ME">CB 4902 ME</option>
         <option value="B 9004 BH">B 9004 BH</option>
+        <option value="CB 4894 ME">CB 4894 ME</option>
+        <option value="B 4068 XA">B 4068 XA</option>
+        <option value="B 3026 BP">B 3026 BP</option>
       </select>
     </div>
     <div class="field">
@@ -207,6 +267,10 @@
       <select id="route">
         <option value="Регион-Шумен">Регион-Шумен</option>
         <option value="Регион-Бургас">Регион-Бургас</option>
+        <option value="Регион-Провадия">Регион-Провадия</option>
+        <option value="Регион-Разград">Регион-Разград</option>
+        <option value="Регион-Силистра">Регион-Силистра</option>
+        <option value="Регион-Добрич">Регион-Добрич</option>
       </select>
     </div>
     <div class="field">
@@ -223,6 +287,7 @@
     <div class="error" id="formError"></div>
     <div class="ok" id="formOk">Курсът е записан в базата данни.</div>
     <button class="btn" id="saveBtn">Запиши курс</button>
+    <div class="slowmsg" id="saveSlow">Свързваме се с базата данни, може да отнеме няколко секунди...</div>
   </div>
 
   <div class="stats">
@@ -262,7 +327,7 @@
    Грешно:    var API_URL = https://script.google.com/macros/s/AAA/exec;
    ================================================================== */
 
- var API_URL = "https://script.google.com/macros/s/AKfycbx86TzWTfYX7KljHARL_6oZOXLfxyn51JdRmqLEaNB45ziEltvCtAWzsBRVTHudQVR7/exec";
+var API_URL = "https://script.google.com/macros/s/AKfycbx86TzWTfYX7KljHARL_6oZOXLfxyn51JdRmqLEaNB45ziEltvCtAWzsBRVTHudQVR7/exec";
 
 /* Резервен вход, важи САМО докато API_URL е празен. */
 var LOCAL_USERS = { "IvoFrm": "Ivo123" };
@@ -354,9 +419,12 @@ function doLogin() {
   }
 
   btn.disabled = true;
-  btn.textContent = "Влизане...";
+  btn.innerHTML = '<span class="spinner"></span>Влизане...';
+  var slowTimer = setTimeout(function () { show("loginSlow"); }, 3000);
 
   api({ action: "login", user: u, pass: p }).then(function (res) {
+    clearTimeout(slowTimer);
+    hide("loginSlow");
     btn.disabled = false;
     btn.textContent = "Влез";
     if (res && res.ok) {
@@ -368,6 +436,8 @@ function doLogin() {
       show("loginError", (res && res.error) ? res.error : "Грешно потребителско име или парола.");
     }
   }).catch(function (err) {
+    clearTimeout(slowTimer);
+    hide("loginSlow");
     btn.disabled = false;
     btn.textContent = "Влез";
     show("loginError", err.message + " Провери интернет връзката.");
@@ -461,13 +531,16 @@ function logDrive() {
 
   var btn = $("saveBtn");
   btn.disabled = true;
-  btn.textContent = "Записване...";
+  btn.innerHTML = '<span class="spinner"></span>Записване...';
+  var slowTimer = setTimeout(function () { show("saveSlow"); }, 3000);
 
   api({
     action: "add", token: token, user: currentUser,
     driver: rec.driver, plate: rec.plate, route: rec.route,
     start: rec.start, end: rec.end
   }).then(function (res) {
+    clearTimeout(slowTimer);
+    hide("saveSlow");
     btn.disabled = false;
     btn.textContent = "Запиши курс";
     if (res && res.ok) {
@@ -480,6 +553,8 @@ function logDrive() {
       show("formError", (res && res.error) ? res.error : "Грешка при записване.");
     }
   }).catch(function (err) {
+    clearTimeout(slowTimer);
+    hide("saveSlow");
     btn.disabled = false;
     btn.textContent = "Запиши курс";
     show("formError", err.message + " Курсът НЕ е записан.");
