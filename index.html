@@ -24,6 +24,37 @@
   select option{background:#080e18;color:#eafffb}
   :focus-visible{outline:2px solid #5eead4;outline-offset:2px}
 
+  /* ---------- Скролбар ---------- */
+  .stops,.sel-menu,body{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(45,212,191,.45) transparent;
+  }
+  .stops::-webkit-scrollbar,
+  .sel-menu::-webkit-scrollbar,
+  body::-webkit-scrollbar{width:9px;height:9px}
+
+  .stops::-webkit-scrollbar-track,
+  .sel-menu::-webkit-scrollbar-track,
+  body::-webkit-scrollbar-track{background:transparent}
+
+  .stops::-webkit-scrollbar-thumb,
+  .sel-menu::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,rgba(45,212,191,.55),rgba(56,189,248,.45));
+    border-radius:999px;
+    border:2px solid transparent;
+    background-clip:content-box;
+  }
+  .stops::-webkit-scrollbar-thumb:hover,
+  .sel-menu::-webkit-scrollbar-thumb:hover,
+  body::-webkit-scrollbar-thumb:hover{
+    background:linear-gradient(180deg,rgba(45,212,191,.85),rgba(56,189,248,.7));
+    background-clip:content-box;
+  }
+  .stops::-webkit-scrollbar-corner,
+  .sel-menu::-webkit-scrollbar-corner,
+  body::-webkit-scrollbar-corner{background:transparent}
+
   @keyframes drift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(7vw,-5vw) scale(1.14)}66%{transform:translate(-6vw,4vw) scale(.92)}100%{transform:translate(0,0) scale(1)}}
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes rise{from{opacity:0;transform:translate3d(0,18px,0)}to{opacity:1;transform:none}}
@@ -422,7 +453,7 @@
       <div class="ring-inner">
         <div class="ring-head">
           <h2>Вход в системата</h2>
-          <span class="ver">v3.5</span>
+          <span class="ver">v3.7</span>
         </div>
 
         <div class="warn" id="offlineWarn">
