@@ -174,6 +174,57 @@
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
   .grid2 .field{margin-bottom:0}
 
+  /* ---------- Падащо меню ---------- */
+  .sel{position:relative}
+  .sel.open{z-index:60}
+  .sel-native{
+    position:absolute!important;width:1px;height:1px;min-height:0;
+    opacity:0;pointer-events:none;padding:0;border:0;margin:0;
+  }
+  .sel-trigger{
+    width:100%;display:flex;align-items:center;gap:10px;
+    background:rgba(5,10,18,.7);border:1px solid rgba(45,212,191,.2);
+    border-radius:13px;padding:14px;color:#eafffb;
+    font:500 15px/1.2 'Golos Text',sans-serif;text-align:left;cursor:pointer;
+    transition:border-color .25s,box-shadow .25s,background .25s;
+  }
+  .sel-trigger:hover{border-color:rgba(45,212,191,.45)}
+  .sel.open .sel-trigger{
+    border-color:rgba(45,212,191,.8);
+    box-shadow:0 0 0 3px rgba(45,212,191,.13),0 0 24px -6px rgba(45,212,191,.4);
+    background:rgba(6,14,24,.92);
+  }
+  .sel-lab{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sel-chev{
+    flex:none;width:8px;height:8px;margin-right:3px;
+    border-right:2px solid #5eead4;border-bottom:2px solid #5eead4;
+    transform:rotate(45deg) translate(-2px,-2px);
+    transition:transform .28s cubic-bezier(.16,1,.3,1);
+  }
+  .sel.open .sel-chev{transform:rotate(-135deg) translate(-3px,-3px)}
+
+  .sel-menu{
+    display:none;position:absolute;left:0;right:0;top:calc(100% + 8px);
+    background:linear-gradient(160deg,rgba(16,25,40,.98),rgba(8,14,23,.98));
+    backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid rgba(45,212,191,.25);border-radius:16px;padding:6px;
+    box-shadow:0 26px 60px -22px rgba(0,0,0,.95);
+    max-height:272px;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  }
+  .sel.open .sel-menu{display:block;animation:riseSm .18s ease both}
+  .sel-item{
+    display:flex;align-items:center;gap:10px;padding:11px 10px;border-radius:11px;
+    cursor:pointer;font:500 14px/1.3 'Golos Text',sans-serif;
+    color:rgba(234,255,251,.78);transition:background .15s,color .15s;
+  }
+  .sel-item+.sel-item{margin-top:2px}
+  .sel-item:hover{background:rgba(45,212,191,.09);color:#eafffb}
+  .sel-item.on{background:rgba(45,212,191,.14);color:#eafffb;font-weight:600}
+  .sel-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sel-check{flex:none;opacity:0;color:#5eead4;font-size:13px}
+  .sel-item.on .sel-check{opacity:1}
+  .sel-plate .sel-lab,.sel-plate .sel-text{letter-spacing:.6px;font-weight:600}
+
   /* ---------- Съобщения ---------- */
   .error,.warn,.ok{display:none;border-radius:14px;padding:12px 13px;margin-bottom:16px;text-align:center;font:500 12.5px/1.45 'Golos Text',sans-serif}
   .error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.42);color:#fca5a5}
@@ -219,9 +270,10 @@
     background:linear-gradient(160deg,rgba(13,21,34,.82),rgba(7,12,20,.76));
     backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
     border:1px solid rgba(45,212,191,.14);
-    box-shadow:0 30px 70px -40px rgba(0,0,0,.95);overflow:hidden;
+    box-shadow:0 30px 70px -40px rgba(0,0,0,.95);overflow:visible;
     animation:riseSm .55s cubic-bezier(.16,1,.3,1) .18s both;
   }
+  .card .scanwrap{position:absolute;inset:0;overflow:hidden;border-radius:22px;pointer-events:none}
   .card .scan{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(94,234,212,.7),transparent);animation:scan 6s ease-in-out infinite}
   .card-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
   .card-head .badge{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,#2dd4bf,#7dd3fc);display:flex;align-items:center;justify-content:center;font:800 14px/1 'Unbounded',sans-serif;color:#03130f;flex:none}
@@ -231,6 +283,7 @@
   /* ---------- Шофьор + аватар ---------- */
   .driver-row{display:flex;align-items:center;gap:11px}
   .driver-row select{flex:1;min-width:0}
+  .driver-row .sel{flex:1;min-width:0}
   .avatar{
     width:46px;height:46px;flex:none;border-radius:15px;
     display:flex;align-items:center;justify-content:center;
@@ -415,7 +468,7 @@
   </div>
 
   <div class="card">
-    <span class="scan"></span>
+    <div class="scanwrap"><span class="scan"></span></div>
     <div class="card-head"><span class="badge">+</span><h2>Нов курс</h2></div>
 
     <div class="field">
@@ -623,7 +676,7 @@ var PHARMACIES = {
     "Фарматрейдинг Аспарухово",
     "Фарматрейдинг Долни Чифлик",
     "Софифарма Провадия",
-    "Витамед Демня",
+    "Витамед Девня",
     "Фармедия Белослав"
   ]
 };
@@ -752,6 +805,120 @@ function updateDriverAvatar() {
   el.textContent = initials(name);
   el.title = name;
 }
+
+/* ---------- Модерно падащо меню ----------
+   Оригиналният <select> остава в страницата, само скрит. Той пази
+   стойността, затова целият останал код работи без промяна. */
+var selWraps = [];
+
+function fireChange(el) {
+  var ev;
+  try {
+    ev = new Event("change", { bubbles: true });
+  } catch (e) {
+    ev = document.createEvent("HTMLEvents");
+    ev.initEvent("change", true, false);
+  }
+  el.dispatchEvent(ev);
+}
+
+function closeAllSelects() {
+  for (var i = 0; i < selWraps.length; i++) {
+    selWraps[i].className = selWraps[i].className.replace(" open", "");
+  }
+}
+
+function enhanceSelect(id, opts) {
+  var sel = $(id);
+  if (!sel) { return; }
+  opts = opts || {};
+
+  var wrap = document.createElement("div");
+  wrap.className = "sel" + (opts.extraClass ? " " + opts.extraClass : "");
+  sel.parentNode.insertBefore(wrap, sel);
+  wrap.appendChild(sel);
+  sel.className = "sel-native";
+
+  var trigger = document.createElement("button");
+  trigger.type = "button";
+  trigger.className = "sel-trigger";
+  trigger.setAttribute("aria-haspopup", "listbox");
+  trigger.setAttribute("aria-expanded", "false");
+
+  var lab = document.createElement("span");
+  lab.className = "sel-lab";
+  var chev = document.createElement("span");
+  chev.className = "sel-chev";
+  trigger.appendChild(lab);
+  trigger.appendChild(chev);
+  wrap.appendChild(trigger);
+
+  var menu = document.createElement("div");
+  menu.className = "sel-menu";
+  menu.setAttribute("role", "listbox");
+  wrap.appendChild(menu);
+
+  function paint() { lab.textContent = sel.value; }
+
+  function build() {
+    menu.innerHTML = "";
+    for (var i = 0; i < sel.options.length; i++) {
+      menu.appendChild(buildItem(sel.options[i].value));
+    }
+  }
+
+  function buildItem(value) {
+    var item = document.createElement("div");
+    item.className = "sel-item" + (value === sel.value ? " on" : "");
+    item.setAttribute("role", "option");
+
+    if (opts.avatar) { item.appendChild(makeAvatar(value, true)); }
+
+    var txt = document.createElement("span");
+    txt.className = "sel-text";
+    txt.textContent = value;
+    item.appendChild(txt);
+
+    var check = document.createElement("span");
+    check.className = "sel-check";
+    check.textContent = "✓";
+    item.appendChild(check);
+
+    item.onclick = function (ev) {
+      ev.stopPropagation();
+      sel.value = value;
+      paint();
+      closeAllSelects();
+      fireChange(sel);
+    };
+    return item;
+  }
+
+  trigger.onclick = function (ev) {
+    ev.stopPropagation();
+    var isOpen = wrap.className.indexOf(" open") > -1;
+    closeAllSelects();
+    if (!isOpen) {
+      build();
+      wrap.className += " open";
+      trigger.setAttribute("aria-expanded", "true");
+      var on = menu.getElementsByClassName("sel-item on")[0];
+      if (on) { menu.scrollTop = Math.max(0, on.offsetTop - 60); }
+    } else {
+      trigger.setAttribute("aria-expanded", "false");
+    }
+  };
+
+  menu.onclick = function (ev) { ev.stopPropagation(); };
+
+  selWraps.push(wrap);
+  paint();
+}
+
+document.addEventListener("click", closeAllSelects);
+document.addEventListener("keydown", function (ev) {
+  if (ev.key === "Escape") { closeAllSelects(); }
+});
 
 /* ---------- Връзка с Google (JSONP) ---------- */
 function api(params) {
@@ -1158,6 +1325,9 @@ if (!API_URL) { show("offlineWarn"); }
 
 paintMode();
 buildDriverColors();
+enhanceSelect("driver", { avatar: true });
+enhanceSelect("plate", { extraClass: "sel-plate" });
+enhanceSelect("route");
 updateDriverAvatar();
 renderStops();
 updatePreview();
