@@ -252,8 +252,23 @@
   }
   .stop+.stop{margin-top:3px}
   .stop:hover{background:rgba(45,212,191,.05)}
-  .stop input{width:20px;height:20px;flex:none;margin:0;padding:0;accent-color:#2dd4bf;cursor:pointer}
-  .stop.checked{background:rgba(45,212,191,.11);border-left-color:#2dd4bf;color:#eafffb;font-weight:600}
+  .stop input{
+    -webkit-appearance:none; appearance:none;
+    width:20px; height:20px; flex:none; margin:0; padding:0; cursor:pointer;
+    border-radius:50%; border:2px solid rgba(148,167,196,.4);
+    background:rgba(5,10,18,.55); position:relative;
+    transition:background .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .stop input:checked{
+    background:#a3e635; border-color:#a3e635;
+    box-shadow:0 0 10px rgba(163,230,53,.75);
+  }
+  .stop input:checked::after{
+    content:""; position:absolute; left:50%; top:50%;
+    width:6px; height:6px; border-radius:50%;
+    background:#03130f; transform:translate(-50%,-50%);
+  }
+  .stop.checked{background:rgba(163,230,53,.12);border-left-color:#a3e635;color:#eafffb;font-weight:600}
   .stops-empty{padding:18px 10px;text-align:center;font:400 12.5px/1.5 'Golos Text',sans-serif;color:rgba(167,243,232,.42)}
   .stops-count{margin-top:10px;text-align:center;font:500 11px/1 'Golos Text',sans-serif;letter-spacing:1.2px;color:rgba(167,243,232,.45)}
 
@@ -408,9 +423,16 @@
       <div class="driver-row">
         <div class="avatar" id="driverAvatar"></div>
         <select id="driver">
-          <option value="Иво Колев">Иво Колев</option>
           <option value="Борислав Яков">Борислав Яков</option>
           <option value="Валентин Недялков">Валентин Недялков</option>
+          <option value="Даниел Василев">Даниел Василев</option>
+          <option value="Димитър Атанасов">Димитър Атанасов</option>
+          <option value="Здравко Симеонов">Здравко Симеонов</option>
+          <option value="Иво Колев">Иво Колев</option>
+          <option value="Йоан Ангелов">Йоан Ангелов</option>
+          <option value="Йоан Стаматов">Йоан Стаматов</option>
+          <option value="Недко Янчев">Недко Янчев</option>
+          <option value="Николай Йотов">Николай Йотов</option>
         </select>
       </div>
     </div>
@@ -597,7 +619,13 @@ var PHARMACIES = {
     "Варнафарма-М Завет",
     "Фармация Исперих"
   ],
-  "Регион-Провадия": []
+  "Регион-Провадия": [
+    "Фарматрейдинг Аспарухово",
+    "Фарматрейдинг Долни Чифлик",
+    "Софифарма Провадия",
+    "Витамед Демня",
+    "Фармедия Белослав"
+  ]
 };
 
 function renderStops() {
@@ -677,7 +705,7 @@ function toggleAllStops() {
 }
 
 /* ---------- Аватари ---------- */
-var AVATAR_COLORS = ["#2dd4bf", "#7dd3fc", "#a78bfa", "#5eead4", "#22d3ee", "#c4b5fd"];
+var AVATAR_COLORS = ["#2dd4bf", "#7dd3fc", "#a78bfa", "#5eead4", "#22d3ee", "#c4b5fd", "#34d399", "#60a5fa", "#d8b4fe", "#67e8f9"];
 var driverColors = {};
 
 function buildDriverColors() {
